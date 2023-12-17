@@ -1,0 +1,17 @@
+{
+    "PRIVATE_KEYS": [
+    "0x你的私钥1"
+   
+    ],
+    "GDrip":289,
+
+    "CORE_RPC_URL": "https://main.confluxrpc.com",
+    "NETWORD_ID": 1029,
+    "ESPACE_RPC_URL":"https://evm.confluxrpc.com",
+    "GAS_PRICE_UPPER_LIMIT": 600,
+    "INCREMENT_GAS_PRICE_BY": 5 ,
+    "RETRY_DELAY_MS": 1000,
+    "abi" : ["function balanceOf(address addr) view returns (uint)"],
+    "CFXS_CONTRACT_ADDRESS": "0xc6e865c213c89ca42a622c5572d19f00d84d7a16"
+
+}
