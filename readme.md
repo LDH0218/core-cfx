@@ -1,6 +1,6 @@
 # corecfxs
 
-本脚本在基础上进行修改可以通过跨 space 打铭文
+本脚本在基础上进行修改，可以批量多账号，通过跨 space 打铭文。
 
 https://github.com/0x01010110/corecfxs
 
