@@ -1,5 +1,5 @@
 
-## 使用方法
+## 多钱包归集CFXs
 
 1. 安装 node.js 环境
 2. npm install
