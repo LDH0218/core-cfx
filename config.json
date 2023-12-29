@@ -1,17 +1,12 @@
 {
-    "PRIVATE_KEYS": [
-    "0x你的私钥1"
-   
-    ],
-    "GDrip":289,
-
-    "CORE_RPC_URL": "https://main.confluxrpc.com",
-    "NETWORD_ID": 1029,
-    "ESPACE_RPC_URL":"https://evm.confluxrpc.com",
-    "GAS_PRICE_UPPER_LIMIT": 600,
-    "INCREMENT_GAS_PRICE_BY": 5 ,
-    "RETRY_DELAY_MS": 1000,
-    "abi" : ["function balanceOf(address addr) view returns (uint)"],
-    "CFXS_CONTRACT_ADDRESS": "0xc6e865c213c89ca42a622c5572d19f00d84d7a16"
-
+    "privateKeys": ["0x私钥1","0x私钥2"],
+    "gasPrice": 1.313,
+    "receiver":"需要转移到的espace钱包地址",
+    "url": "https://main.confluxrpc.com",
+    "eSpaceUrl": "https://evm.confluxrpc.com",
+    "networkId": 1029,
+    "cfxs": "0xc6e865c213c89ca42a622c5572d19f00d84d7a16",
+    "exchangeContract": "0x5c3c1a119300669990863861a854616ecb04b463",
+    "newCfxs": "0xd3a4d837e0a7b40de0b4024fa0f93127dd47b8b8"
+    
 }

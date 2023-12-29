@@ -5,20 +5,31 @@ const path = require('path');
 const config = require('./config.json');
 
 const conflux = new Conflux({
-    url: config.CORE_RPC_URL,
-    networkId: config.NETWORD_ID,
+    url: config.url,
+    networkId: config.networkId,
 });
-const GAS_PRICE_UPPER_LIMIT = BigInt(config.GAS_PRICE_UPPER_LIMIT);
-const INCREMENT_GAS_PRICE_BY = BigInt(config.INCREMENT_GAS_PRICE_BY);
-const RETRY_DELAY_MS = config.RETRY_DELAY_MS;
-const CFXS_CONTRACT_ADDRESS = config.CFXS_CONTRACT_ADDRESS;
-const PRIVATE_KEYS = config.PRIVATE_KEYS;
-const evmprovider = new ethers.JsonRpcProvider(config.ESPACE_RPC_URL);
-const abi = config.abi
-const cfxscontract = new Contract(CFXS_CONTRACT_ADDRESS, abi, evmprovider);
+
+const PRIVATE_KEYS = config.privateKeys;
 const CrossSpaceCall = conflux.InternalContract('CrossSpaceCall');
 const accounts = PRIVATE_KEYS.map(key => conflux.wallet.addPrivateKey(key));
-const GDrip = config.GDrip;
+const Gdrip = config.gasPrice;
+
+// async function getAdjustedGasPrice() {
+//     let currentGasPrice = await conflux.getGasPrice();
+
+
+//     // 检查当前 Gas 价格是否超过上限
+//     while (currentGasPrice/ BigInt(1e9) > GAS_PRICE_UPPER_LIMIT) {
+
+//         await waitMilliseconds(RETRY_DELAY_MS); // 等待后重新获取
+//         currentGasPrice = await conflux.getGasPrice();
+//         console.log("currentGasPrice:",currentGasPrice/ BigInt(1e9))
+//     }
+
+//     let currentGDrip=currentGasPrice/ BigInt(1e9)+INCREMENT_GAS_PRICE_BY
+//     return currentGDrip;
+
+// }
 
 
 function getBeijingTime() {
@@ -31,24 +42,12 @@ function getBeijingTime() {
     return beijingTime.toISOString().replace('T', ' ').replace('Z', '');
 }
 
-async function getBalance(account) {
-    try {
-        const balance = await cfxscontract.balanceOf(address.cfxMappedEVMSpaceAddress(account.address));
-        //console.log(`${account.address} balance:`, balance.toString());
-        return balance; // 返回获取到的余额
-    } catch (error) {
-        await appendErrorToFile(account.address, error.message);
-        console.error('Error getting balance:', error);
-        return null; // 在发生错误时返回null或适当的错误值
-    }
-}
 
 
 async function appendErrorToFile(accountAddress, message, transactionHash = '') {
     // 确保账户地址是安全的文件名
     let sanitizedAccountAddress = accountAddress.replace(/[<>:"\/\\|?*]+/g, '_');
     let logFileName = `${sanitizedAccountAddress}_errors.txt`;
-
     let timestamp = getBeijingTime(); // 获取北京时间
     let logMessage = `[${timestamp}]  Transaction Hash: ${transactionHash}, Message: ${message}\n`;
 
@@ -73,13 +72,13 @@ async function main() {
 
 async function handleAccount(account, accountIndex) {
     let round = 1;
-
+    
     while (true) {
         try {
-            let balance = await getBalance(account)
-            console.log(`Account ${accountIndex} Balance ${balance} Round ${round} start`);
-            await oneRound(account, accountIndex);
-
+            
+            console.log(`Account ${accountIndex} Balance ${balance} 轮次 ${round} start`);
+            //await oneRound(account, accountIndex);
+            
             round++;
         } catch (error) {
             await appendErrorToFile(account.address, error.message);
@@ -94,63 +93,54 @@ async function waitMilliseconds(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// async function getAdjustedGasPrice() {
-//     let currentGasPrice = await conflux.getGasPrice();
 
-
-//     // 检查当前 Gas 价格是否超过上限
-//     while (currentGasPrice/ BigInt(1e9) > GAS_PRICE_UPPER_LIMIT) {
-
-//         await waitMilliseconds(RETRY_DELAY_MS); // 等待后重新获取
-//         currentGasPrice = await conflux.getGasPrice();
-//         console.log("currentGasPrice:",currentGasPrice/ BigInt(1e9))
-//     }
-
-//     let currentGDrip=currentGasPrice/ BigInt(1e9)+INCREMENT_GAS_PRICE_BY
-//     return currentGDrip;
-
-// }
 
 
 async function oneRound(account, accountIndex) {
     let hashes = [];
-    let batch = 5;
+    let batch = 8;
     let nonce = await conflux.getNextNonce(account.address);
-    for (let i = 0; i < batch; i++) {
+    let i;
+    for (i = 0; i < batch; i++) {
         try {
-
+            let currentNonce = nonce + BigInt(i);
             let hash = await CrossSpaceCall.transferEVM('0xc6e865c213c89ca42a622c5572d19f00d84d7a16').sendTransaction({
                 from: account.address,
-                nonce: nonce + BigInt(i),
-                gasPrice: Drip.fromGDrip(GDrip)
+                nonce: currentNonce, // 使用更新后的 currentNonce
+                gasPrice: Drip.fromGDrip(Gdrip)
             });
             hashes.push(hash);
         } catch (error) {
+            console.log(`交易失败，账户 ${accountIndex}, nonce ${nonce + BigInt(i)}, 错误信息: ${error.message}`);
             await appendErrorToFile(account.address, error.message);
-            console.log(error);
+            break; // 如果一个交易失败，终止当前批次
         }
         await waitMilliseconds(500);
     }
 
-    for (j = 0; j < hashes.length; j++) {
+    for (let j = 0; j < hashes.length; j++) {
         let hash = hashes[j];
         for (let k = 0; k < 30; k++) {
             try {
                 let receipt = await conflux.getTransactionReceipt(hash);
                 if (receipt) {
                     let gasFee = (Number(receipt.gasFee) / 1e18).toFixed(3);
-                    console.log(`Batch ${j}, Account ${accountIndex}, hash ${hash}, Gas used: ${gasFee}`);
+                    console.log(`批次 ${j}, 账户 ${accountIndex}, 哈希 ${hash}, 使用的 Gas 费用: ${gasFee}`);
                     break;
                 }
                 await waitMilliseconds(1000);
             } catch (error) {
                 await appendErrorToFile(account.address, error.message, hash);
-                console.error(`Error fetching receipt for batch ${j}, account ${accountIndex}`);
-                break;
+                console.error(`获取批次 ${j}, 账户 ${accountIndex} 的收据时出错`);
+                break; // 如果获取收据时出现错误，终止当前批次
             }
         }
     }
+
+    // 为下一轮更新 nonce
+    nonce += BigInt(batch);
 }
+
 
 
 main().catch(err => {

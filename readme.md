@@ -1,38 +1,15 @@
-# corecfxs
-
-本脚本在基础上进行修改，可以批量多账号，通过跨 space 打铭文。
-
-https://github.com/0x01010110/corecfxs
 
 ## 使用方法
 
 1. 安装 node.js 环境
-
 2. npm install
-
-3. 修改 config.json 文件的 `PRIVATE_KEYS` 填入私钥. 需要确保账户里有足够的 CFX 用于支付手续费 
-
-4. 修改合适的`GDrip`，目前采用固定的GDrip, 可在配置文件中配置，具体的数值可以参考这个网站看实时的GDrip
-
-   https://confluxscan.io/address/cfx:aaejuaaaaaaaaaaaaaaaaaaaaaaaaaaaa2sn102vjv
-
-5. 启动脚本  `node index.js`
-
-  
+3. 修改 config.json 文件的 `privateKeys` 填入私钥，`receiver`填入最终的归集钱包
+4. 先将旧的转化为新的CFXs启动脚本  `node exchangeCfxs.js`
+4. 再将新的CFXs归集`node transferCfxs.js`
 
 ### 说明
 
-1. 如果出现报错，大概率是GDrip给低了或者rpc网络拥堵导致的，继续运行即可。强烈建议付费节点，会稳定非常多。
-2. 这里可以注册免费的私人节点。
-https://console.unifra.io/
-3. 可以多个账号同时打格式为 "PRIVATE_KEYS": ["0x你的私钥1","0x你的私钥2","0x你的私钥3" ]
-4. 此项目基于模仿和chagpt开发，bug较多请大家谅解。
-5. 打到的铭文在 Core 空间账户的 eSpace 映射地址中
-6. 将来铭文取出需要通过跨 space 调用(通过工具)来操作会有人开发。
-7. 在 Core 空间打 cfxs 花费的 gas 是 eSpace 同样交易的 10 倍， 前期 core 这个 gas 价格低的情况下有优势，如果两边的价格都涨至相同的价位， 则 Core 的手续费更贵.
-   
-## 获取映射地址
+1. 账号越多，对rpc的要求越高。
+1. 遇到报错，多次重复运行即可。
+1. 在exchangeIndex，transferIndex文件夹中可看到各个地址的进度，如果最后发现数量对不上，重复运行即可。
 
-```shell
-node getMapAddress.js
-```
