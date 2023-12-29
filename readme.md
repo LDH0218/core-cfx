@@ -10,6 +10,7 @@
 ### 说明
 
 1. 账号越多，对rpc的要求越高。
-1. 遇到报错，多次重复运行即可。
-1. 在exchangeIndex，transferIndex文件夹中可看到各个地址的进度，如果最后发现数量对不上，重复运行即可。
+2. 遇到报错，多次重复运行即可。
+3. 在exchangeIndex，transferIndex文件夹中可看到各个地址的进度，最好先将全部CFXs换成新的，再归集，如果最后发现数量对不上，重复运行即可。
+4. 可修改config.json文件中的`gasPrice`调整gas。
 
