@@ -34,8 +34,6 @@ async function handleAccount(account, ids) {
                 saveIndex(filename, currentIndex,indexType,0);
                 continue;
             }
-            console.log(`Transfer cfxs id ${exIds} to ${receiver}`);
-            const receipt = await transferCFXs(account,exIds, receiver);
             console.log(`Result: ${receipt.outcomeStatus === 0 ? 'success' : 'fail'}`);
             if (receipt.outcomeStatus === 0) {
                 currentIndex = i + STEP;
