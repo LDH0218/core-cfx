@@ -31,7 +31,7 @@ async function handleAccount(account, ids) {
             }
             if (exIds.length === 0) 
             {
-                saveIndex(filename, currentIndex,indexType);
+                saveIndex(filename, currentIndex,indexType,0);
                 continue;
             }
             console.log(`Transfer cfxs id ${exIds} to ${receiver}`);
@@ -39,8 +39,8 @@ async function handleAccount(account, ids) {
             console.log(`Result: ${receipt.outcomeStatus === 0 ? 'success' : 'fail'}`);
             if (receipt.outcomeStatus === 0) {
                 currentIndex = i + STEP;
+                saveIndex(filename, currentIndex,indexType,0);
             }
-            saveIndex(filename, currentIndex,indexType);
         } catch(e) {
             console.log('Transfer Error', e);
             await waitMilliseconds(500);
