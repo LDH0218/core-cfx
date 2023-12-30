@@ -31,7 +31,7 @@ async function handleAccount(account, ids) {
                 saveIndex(filename, currentIndex,indexType,0);
                 continue;
             }
-            console.log(`Exchange cfxs id ${exIds} to ${receiver}`);
+            console.log(`Exchange cfxs id ${exIds}`);
             const receipt = await exchangeCFXs(account,exIds);
             console.log(`Result: ${receipt.outcomeStatus === 0 ? 'success' : 'fail'}`);
             if (receipt.outcomeStatus === 0) {
