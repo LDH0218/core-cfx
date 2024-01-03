@@ -9,11 +9,12 @@ async function getNewCfxsIds(_addr) {
     const limit = 1000;
     let startIndex = 0;
     while(true) {
-        let { data: {count, rows} } = await axios.get(`http://test.conins.io/newlist?owner=${_addr}&startIndex=${startIndex}&size=${limit}`);
+        let { data: {count, rows} } = await axios.get(`http://www.conins.io/getCfxsNewList?owner=${_addr}&startIndex=${startIndex}&size=${limit}`);
         ids = ids.concat(rows.map(item => item.id));
         if (rows.length < limit) {
             break;
         }
+        console.log(ids);
         startIndex += limit;
     }
     return ids;
