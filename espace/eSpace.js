@@ -13,7 +13,7 @@ const cfxsExchangeContract = new Contract(CONFIG.exchangeContract, exchangeContr
 const cfxsMainContract = new Contract(CONFIG.newCfxs, cfxsMainMeta.abi, provider);
 
 function getWallet() {
-    const wallet = new Wallet(CONFIG.eSpacePrivateKey, provider);
+    const wallet = new Wallet(CONFIG.espacePrivateKey, provider);
     return wallet;
 }
 
